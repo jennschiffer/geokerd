@@ -30,4 +30,8 @@ $zip = "zip";
 $latitude = "lat";
 $longitude = "lng";
 
+/* Enter your own Google Maps API here
+	for more info, go here:  */
+$googleMapsAPI = "AIzaSyC12eZOT9Lb3Z2P3ZWIDZh9mhuT0qeMYNc";
+
 ?>
