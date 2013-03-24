@@ -8,7 +8,7 @@
 // check ajax call for geocoded data
 if ( isset($GLOBALS['HTTP_RAW_POST_DATA'] ))
 {
-	$result = saveLatLng($GLOBALS['HTTP_RAW_POST_DATA']);
+	$result = saveLatLng($GLOBALS['HTTP_RAW_POST_DATA']);	
 	print $result;
 }
 
@@ -47,8 +47,10 @@ function geocodeDatabase() {
 
 // save latitude and longitude to the database
 function saveLatLng($latLngArray) {
+
 	$thisGeocoded = explode(",",$latLngArray);
-	return "latitude: " . $thisGeocoded[0] . ", longitude: " . $thisGeocoded[1];
+	return "row: " . $thisGeocode[0] . ", latitude: " . $thisGeocoded[1] . ", longitude: " . $thisGeocoded[2];
+	
 }
 
 ?>
