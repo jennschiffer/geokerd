@@ -1,86 +1,3 @@
-<?php 
-	/*
-	* GEOKERD, ERMAGHERD
-	* takes a mysql table of addresses and generates latitude
-	* and longitude values for each using Google Maps API.
-	* I made this so I can geocode existing addresses to put in a map.
-	*/
-
-if ( $_POST['source'] == 'submit-table' ) {
-	include 'config.php';
-	include 'functions.php';
-	$arrayOfAddresses = geocodeDatabase(); 
-?>
-	
-<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=<?php echo $googleMapsAPI; ?>&sensor=true"></script>
-<script type="text/javascript">
-
-/**
-
-initialize
-
--- on submit --
-foreach record in table
-	
-	codeAddress(that record)
-	
-/foreach
-
-*/
-	
-	var geocoder;
-	var geocodedArray = new Array();
-	var addressesArray = <?php echo json_encode($arrayOfAddresses); ?>;
-	var geocodedAddressData = JSON.stringify( codeAddress(addressesArray) );
-
-	function initialize() {
-		geocoder = new google.maps.Geocoder();
-	}
-	
-	function codeAddress(passedArray) {
-		
-		initialize();
-		
-		var addresses = passedArray;
-		var geocodedArray = new Array();
-		var address, latitude, longitude;
-		
-		for ( var i = 0; i <= 3; i++ ) {
-			
-			address = addresses[i];
-			
-			geocoder.geocode( { 'address': address }, function(results, status) {
-				if (status == google.maps.GeocoderStatus.OK) {
-					latitude = results[0].geometry.location.lat();
-					longitude = results[0].geometry.location.lng();
-					geocodedArray[i] = [i, latitude, longitude];
-					
-					var ajax = new XMLHttpRequest();
-					ajax.open('POST','functions.php',true);
-					ajax.setRequestHeader('Content-Type','application/json');
-					ajax.onreadystatechange = function() {
-						if ( ajax.readyState == 4 && ajax.status == 200 ) { 
-							var response = ajax.responseText;
-							console.log(response);
-						}
-					}  	
-					ajax.send(geocodedArray[i]);
-					ajax.close;
-				} 
-				else {
-					alert('Geocoding failed: ' + status);
-				}
-			});	
-		}
-	}
-	
-</script>
-		
-<?php 
-	$alert = "Congrats! Your lat/long table fields should now be populated!";
-	} // end if-db-submitted 
-?>
-
 <!doctype html>
 <html>
 <head>
@@ -95,39 +12,122 @@ foreach record in table
 		#submit { background: #ccc; padding: 10px; margin: 30px; color: #333; font-size: 2em; }
 		#submit:hover { -webkit-box-shadow: 2px 2px 5px #666; -webkit-transition: all ease-out 200ms; }
 	</style>
+
+<?php 
+	// START ON-SUBMIT
+	if ( $_POST['source'] == 'submit-table' ) {
+		include 'config.php';
+		include 'functions.php';
+		connectToDatabase();
+?>
+
+	<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=<?php echo $googleMapsAPI; ?>&sensor=true"></script>
+	<script type="text/javascript">
+		
+		function codeAddress(addressArray) {
+			var geocoder = new google.maps.Geocoder();
+			var geocodedAddress = new Array();
+			var latitude, longituded;
+			var addressID = addressArray['id'];
+			var address = addressArray['address'];			
+						
+			geocoder.geocode( { 'address': address }, test_geocode = function(results, status) {
+				if (status == google.maps.GeocoderStatus.OK) {
+					latitude = results[0].geometry.location.lat();
+					longitude = results[0].geometry.location.lng();
+					geocodedAddress = [addressID, latitude, longitude];
+					
+					var ajax = new XMLHttpRequest();
+					ajax.open('POST','functions.php',true);
+					ajax.setRequestHeader('Content-Type','application/json');
+					ajax.onreadystatechange = function() {
+						if ( ajax.readyState == 4 && ajax.status == 200 ) { 
+							var response = ajax.responseText;
+							console.log(response);
+						}
+					}  	
+					ajax.send(geocodedAddress);
+					ajax.close;
+				} 
+				else {
+					alert('Geocoding failed: ' + status);
+				}	
+			});	
+		}
+		
+	<?php
+		$addresses = mysql_query("SELECT * FROM $table");
+		$count = mysql_num_rows($addresses);
+		$test_count = 0;
+		
+		if ( $count > 0 ) { 
+			while ( $row = mysql_fetch_array($addresses) ) {
+				$addressID = $row[$index];
+			
+				// test_count if
+				if ( $test_count < 5 ) {
+				
+					if ( $fullAddress ) { 
+						$address = $row[$fullAddress];
+					}
+					else {
+						$address = $row[$street] . ' ' . $row[$city] . ', ' . $row[$state] . ' ' . $row[$zip];
+					}
+					
+					$addressArray = Array( 'id' => $addressID, 'address' => $address );
+					
+					echo 'var addressToGeocode = ' . json_encode($addressArray) . ';' . 
+						 'var ajaxAddress = codeAddress( addressToGeocode );';
+						 
+				} // end test_count if
+			
+			$test_count++;
+			}
+		}
+		else {
+			$alert = 'There are no records in this table. Do you even blend, brah?';
+		}
+		
+		$alert = "Congrats! Your lat/long table fields should now be populated!";
+		
+	} // END ON-SUBMIT
+?>
+	</script>
+	
 </head>
 
 <body>
 
-<?php if ( $alert ) { ?>
-	<div id="alert">
-		<?php echo $alert; ?>
-	</div>
-<?php } ?>
+	<?php 
+		if ( $alert ) { 
+			echo '<div id="alert">' . $alert . '</div>'; 
+		} 
+	?>
 
-<h1>GEOKERD</h1>
-
-<ol id="faq">
-	<li>What is this?</li>
-	<p>This is a script you can use to generate latitude and longitude values for addresses you already have in a database, using the Google Maps API.
-	</p>
+	<h1>GEOKERD</h1>
 	
-	<li>What do I need?</li>
-	<p>You need a mysql database table of addresses, which has a field for latitude and a field for longitude. You need the credentials to modify this database table, and you also need a Google Maps API key.</p>
+	<ol id="faq">
+		<li>What is this?</li>
+		<p>This is a script you can use to generate latitude and longitude values for addresses you already have in a database, using the Google Maps API.
+		</p>
+		
+		<li>What do I need?</li>
+		<p>You need a mysql database table of addresses, which has a field for latitude and a field for longitude. You need the credentials to modify this database table, and you also need a Google Maps API key. <em>Note: As this is powered by Google's API, you are limited to 2500 requests/address lookups per day. <a href="https://developers.google.com/maps/documentation/geocoding/" target="_blank">See the Geocoder API docs here.</a></p>
+		
+		<li>How do I make it work?</li>
+		<p>Get the app from Github and add the directory to a local or remote server. Update the config.php document with all the necessary info (database creds, field names, Google Maps API key). Then go to the app in your browser and click the shiny button!</p>
+		
+		<li>Ok then what?</li>
+		<p>Then you'll have a table of addresses *with* their latitudes and longitudes, you can use this table to do fun stuff with Google Maps or any other APIs that require geocoded data to work. Get going, press the button!</p>
+	</ol>
 	
-	<li>How do I make it work?</li>
-	<p>Get the app from Github and add the directory to a local or remote server. Update the config.php document with all the necessary info (database creds, field names, Google Maps API key). Then go to the app in your browser and click the shiny button!</p>
+	<form id="submit-table" method="post" action="">
+		<input type="hidden" name="source" value="submit-table" />
+		<input type="hidden" name="rowID" value="" />
+		<input type="submit" id="submit" value="CLICK THIS TO GEOCODE" />
+	</form>
 	
-	<li>Ok then what?</li>
-	<p>Then you'll have a table of addresses *with* their latitudes and longitudes, you can use this table to do fun stuff with Google Maps or any other APIs that require geocoded data to work. Get going, press the button!</p>
-</ol>
-
-<form id="submit-table" method="post" action="">
-	<input type="hidden" name="source" value="submit-table" />
-	<input type="submit" id="submit" value="CLICK THIS TO GEOCODE" />
-</form>
-
-<p>[made by <a href="http://jennschiffer.com">jenn</a>]</p>
+	<p>[<a href="http://jennschiffer.com">made by jenn schiffer, with &hearts;</a>]</p>
 
 </body>
 </html>

@@ -14,7 +14,8 @@ $database = 'hackjersey';
 $table = 'facilities';
 
 /* enter the field names from $table 
-	which correspond to the address info */
+	which correspond to the table and address info */
+$index = 'ID'; 
 $street = 'address';
 $city = 'city';
 $state = 'state';
