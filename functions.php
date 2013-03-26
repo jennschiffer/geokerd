@@ -1,9 +1,9 @@
 <?php 
 
-/**********************************************************
+/*************************************************************
 * mysql-table-geocode functions file
-* HERE IS WHERE THE PHP MAGIC HAPPENS. PAWS OFF, PALS.
-**********************************************************/
+* HERE IS WHERE SOME OF THE PHP MAGIC HAPPENS. PAWS OFF, PALS.
+**************************************************************/
 
 // check ajax call for geocoded data
 if ( isset($GLOBALS['HTTP_RAW_POST_DATA'] ))
@@ -24,15 +24,26 @@ function connectToDatabase() {
 	if (!$locationDatabase) {
 		die('Could not reach database: ' . mysql_error());
 	}
-	
 }
 
 
 // save latitude and longitude to the database
 function saveLatLng($latLngArray) {
+	
+	include 'config.php';
+	connectToDatabase();
 
-	$thisGeocoded = explode(",",$latLngArray);
-	return "row: " . $thisGeocoded[0] . ", latitude: " . $thisGeocoded[1] . ", longitude: " . $thisGeocoded[2];
+	$geocodedToSave = explode(",",$latLngArray);
+	
+	$result = mysql_query('UPDATE ' . $table . 
+						 ' SET `' . $latitude . '`=' . $geocodedToSave[2] . ', `' . $longitude . '`=' . $geocodedToSave[3] . 
+						 ' WHERE `' . $index . '`=' . $geocodedToSave[0] . ';');
+						 
+	return 'ROWID: ' . $geocodedToSave[0] . 
+			', ADDRESS: ' . $geocodedToSave[1] . 
+			', LATITUDE: ' . $geocodedToSave[2] . 
+			', LONGITUDE: ' . $geocodedToSave[3];
+			
 }
 
 ?>

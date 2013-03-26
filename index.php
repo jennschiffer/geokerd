@@ -7,6 +7,9 @@
 		body { background: #fff; padding: 20px; font-family: Georgia, serif; color: #333; width: 600px; margin: 20px auto; }
 		h1 { margin: 0; }
 		#alert { background: #cc9; padding: 10px; margin-bottom: 20px; font-weight: bold; font-style: italic; text-align: center; }	
+		#alert ol { background: white;  text-align: left; padding: 10px; }
+		#alert ol li { font-weight: normal; font-style: normal; font-size: .8em; list-style-position: inside; margin: 20px 0 0; }
+		#alert ol li:first-child { margin: 0;}
 		ol li { font-weight: bold; margin-top: 30px; }
 		form { text-align: center; }
 		#submit { background: #ccc; padding: 10px; margin: 30px; color: #333; font-size: 2em; }
@@ -27,7 +30,6 @@
 		function codeAddress(addressArray) {
 			var geocoder = new google.maps.Geocoder();
 			var geocodedAddress = new Array();
-			var latitude, longituded;
 			var addressID = addressArray['id'];
 			var address = addressArray['address'];			
 						
@@ -35,60 +37,56 @@
 				if (status == google.maps.GeocoderStatus.OK) {
 					latitude = results[0].geometry.location.lat();
 					longitude = results[0].geometry.location.lng();
-					geocodedAddress = [addressID, latitude, longitude];
+					geocodedAddress = [addressID, address.replace(/,/g,''), latitude, longitude];
 					
 					var ajax = new XMLHttpRequest();
 					ajax.open('POST','functions.php',true);
 					ajax.setRequestHeader('Content-Type','application/json');
 					ajax.onreadystatechange = function() {
 						if ( ajax.readyState == 4 && ajax.status == 200 ) { 
-							var response = ajax.responseText;
-							console.log(response);
+							var response = ajax.responseText;							
+							var responseItem = document.createElement("li");
+							var responseText = document.createTextNode(response);
+							responseItem.appendChild(responseText);
+     						document.getElementById('address-success').appendChild(responseItem); 
 						}
 					}  	
 					ajax.send(geocodedAddress);
 					ajax.close;
 				} 
 				else {
-					alert('Geocoding failed: ' + status);
+					console.log('Geocoding failed: ' + status);
 				}	
+
 			});	
 		}
 		
 	<?php
 		$addresses = mysql_query("SELECT * FROM $table");
 		$count = mysql_num_rows($addresses);
-		$test_count = 0;
 		
 		if ( $count > 0 ) { 
 			while ( $row = mysql_fetch_array($addresses) ) {
 				$addressID = $row[$index];
-			
-				// test_count if
-				if ( $test_count < 5 ) {
+						
+				if ( $fullAddress ) { 
+					$address = $row[$fullAddress];
+				}
+				else {
+					$address = $row[$street] . ' ' . $row[$city] . ', ' . $row[$state] . ' ' . $row[$zip];
+				}
 				
-					if ( $fullAddress ) { 
-						$address = $row[$fullAddress];
-					}
-					else {
-						$address = $row[$street] . ' ' . $row[$city] . ', ' . $row[$state] . ' ' . $row[$zip];
-					}
-					
-					$addressArray = Array( 'id' => $addressID, 'address' => $address );
-					
-					echo 'var addressToGeocode = ' . json_encode($addressArray) . ';' . 
-						 'var ajaxAddress = codeAddress( addressToGeocode );';
-						 
-				} // end test_count if
-			
-			$test_count++;
+				$addressArray = Array( 'id' => $addressID, 'address' => $address );
+				
+				echo 'var addressToGeocode = ' . json_encode($addressArray) . ';' . 
+					 'var ajaxAddress = codeAddress( addressToGeocode );';	 
 			}
 		}
 		else {
 			$alert = 'There are no records in this table. Do you even blend, brah?';
 		}
 		
-		$alert = "Congrats! Your lat/long table fields should now be populated!";
+		$alert = "Success! The latitude and longitude values of the following addresses have been updated in your table.";
 		
 	} // END ON-SUBMIT
 ?>
@@ -98,13 +96,14 @@
 
 <body>
 
-	<?php 
-		if ( $alert ) { 
-			echo '<div id="alert">' . $alert . '</div>'; 
-		} 
-	?>
 
 	<h1>GEOKERD</h1>
+	
+	<?php 
+		if ( $alert ) { 
+			echo '<div id="alert">' . $alert . '<ol id="address-success"></ol></div>'; 
+		} 
+	?>
 	
 	<ol id="faq">
 		<li>What is this?</li>
