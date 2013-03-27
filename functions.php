@@ -1,9 +1,8 @@
 <?php 
 
-/*************************************************************
-* mysql-table-geocode functions file
+/**
 * HERE IS WHERE SOME OF THE PHP MAGIC HAPPENS. PAWS OFF, PALS.
-**************************************************************/
+**/
 
 // check ajax call for geocoded data
 if ( isset($GLOBALS['HTTP_RAW_POST_DATA'] ))
