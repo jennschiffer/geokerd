@@ -17,11 +17,11 @@ function connectToDatabase() {
 	include 'config.php';
 	$link = mysql_connect($host, $username, $password);
 	if (!$link) {
-		die('Could not connect to mysql: ' . mysql_error());
+		die('Looks like you didn\'t enter your database table credentials in /config.php properly!<p><em>' . mysql_error() . '</em></p>');
 	}
 	$locationDatabase = mysql_select_db($database, $link);
 	if (!$locationDatabase) {
-		die('Could not reach database: ' . mysql_error());
+		die('Looks like you didn\'t enter your database table credentials in /config.php properly!<p><em>' . mysql_error() . '</em></p>');
 	}
 }
 
