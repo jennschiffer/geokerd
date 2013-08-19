@@ -69,6 +69,7 @@
 	<?php
 		$addresses = mysql_query("SELECT * FROM $table");
 		$count = mysql_num_rows($addresses);
+		$alert = "Something didn't work.";
 		
 		if ( $count > 0 ) { 
 			while ( $row = mysql_fetch_array($addresses) ) {
