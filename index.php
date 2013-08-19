@@ -105,7 +105,7 @@
 	<h2>geocoding mysql tables of addresses with ease</h2>	
 	
 	<?php 
-		if ( $alert ) { 
+		if ( isset($alert) ) { 
 			echo '<div id="alert">' . $alert . '<ol id="address-success"></ol></div>'; 
 		} 
 	?>
