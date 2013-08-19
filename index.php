@@ -21,7 +21,7 @@
 
 <?php 
 	// START ON-SUBMIT
-	if ( $_POST['source'] == 'submit-table' ) {
+	if ( isset($_POST['source']) && $_POST['source'] == 'submit-table' ) {
 		include 'config.php';
 		include 'functions.php';
 		connectToDatabase();
