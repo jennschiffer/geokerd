@@ -85,12 +85,13 @@
 				
 				echo 'var addressToGeocode = ' . json_encode($addressArray) . ';' . 
 					 'var ajaxAddress = codeAddress( addressToGeocode );';	 
-			}			
+			}
+			$alert = "The latitude and longitude values of the following addresses have been updated in your table.";
 		}
 		else {
 			$alert = 'There are no records in this table. Do you even blend, brah?';
 		} 
-		$alert = "The latitude and longitude values of the following addresses have been updated in your table.";
+		
 		
 	} // END ON-SUBMIT
 ?>
