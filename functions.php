@@ -31,17 +31,22 @@ function saveLatLng($latLngArray) {
 	
 	include 'config.php';
 	connectToDatabase();
+	
+	$latitudeToSave = $geocodedToSave[2];
+	$longitudeToSave = $geocodedToSave[3];
+	$indexToSaveTo = $geocodedToSave[0];
+	$addressToSaveTo = $geocodedToSave[1];
 
 	$geocodedToSave = explode(",",$latLngArray);
 	
 	$result = mysql_query('UPDATE ' . $table . 
-						 ' SET `' . $latitude . '`=' . $geocodedToSave[2] . ', `' . $longitude . '`=' . $geocodedToSave[3] . 
-						 ' WHERE `' . $index . '`=' . $geocodedToSave[0] . ';');
+						 ' SET `' . $latitude . '`=' . $latitudeToSave . ', `' . $longitude . '`=' . $longitudeToSave . 
+						 ' WHERE `' . $index . '`=' . $indexToSaveTo . ';');
 						 
-	return 'ROWID: ' . $geocodedToSave[0] . 
-			', ADDRESS: ' . $geocodedToSave[1] . 
-			', LATITUDE: ' . $geocodedToSave[2] . 
-			', LONGITUDE: ' . $geocodedToSave[3];
+	return 'ROWID: ' . $indexToSaveTo . 
+			', ADDRESS: ' . $addressToSaveTo . 
+			', LATITUDE: ' . $latitudeToSave . 
+			', LONGITUDE: ' . $longitudeToSave;
 			
 }
 

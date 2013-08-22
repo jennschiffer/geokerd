@@ -67,7 +67,8 @@
 		}
 		
 	<?php
-		$addresses = mysql_query("SELECT * FROM $table");
+		
+		$addresses = mysql_query(sprintf("SELECT * FROM $table"));
 		$count = mysql_num_rows($addresses);
 		$alert = "Something didn't work.";
 		
@@ -75,13 +76,12 @@
 			while ( $row = mysql_fetch_array($addresses) ) {
 				$addressID = $row[$index];
 						
-				if ( $fullAddress ) { 
-					$address = $row[$fullAddress];
+				if ( $index ) { 
+					$address = $row[$street] . ' ' . $row[$city] . ', ' . $row[$state] . ' ' . $row[$zip];
 				}
 				else {
 					$address = $row[$street] . ' ' . $row[$city] . ', ' . $row[$state] . ' ' . $row[$zip];
 				}
-				
 				$addressArray = Array( 'id' => $addressID, 'address' => $address );
 				
 				echo 'var addressToGeocode = ' . json_encode($addressArray) . ';' . 
