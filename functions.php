@@ -32,12 +32,12 @@ function saveLatLng($latLngArray) {
 	include 'config.php';
 	connectToDatabase();
 	
+	$geocodedToSave = explode(",",$latLngArray);
+	
 	$latitudeToSave = $geocodedToSave[2];
 	$longitudeToSave = $geocodedToSave[3];
 	$indexToSaveTo = $geocodedToSave[0];
 	$addressToSaveTo = $geocodedToSave[1];
-
-	$geocodedToSave = explode(",",$latLngArray);
 	
 	$result = mysql_query('UPDATE ' . $table . 
 						 ' SET `' . $latitude . '`=' . $latitudeToSave . ', `' . $longitude . '`=' . $longitudeToSave . 
