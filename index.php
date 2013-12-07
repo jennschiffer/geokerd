@@ -116,7 +116,7 @@
 		</p>
 		
 		<li>What do I need?</li>
-		<p>You need a mysql database table of addresses, which has a field for latitude and a field for longitude. You need the credentials to modify this database table, and you also need a Google Maps API key. <em>Note: As this is powered by Google's API, you are limited to 2500 requests per day. <a href="https://developers.google.com/maps/documentation/geocoding/" target="_blank">See the Geocoder API docs here.</a></p>
+		<p>You need a mysql database table of addresses, which has a field for latitude and a field for longitude (both of type float). You need the credentials to modify this database table, and you also need a Google Maps API key. <em>Note: As this is powered by Google's API, you are limited to 2500 requests per day. <a href="https://developers.google.com/maps/documentation/geocoding/" target="_blank">See the Geocoder API docs here.</a></p>
 		
 		<li>How do I make it work?</li>
 		<p><a href="https://github.com/jennschiffer/geokerd">Get the app from Github</a> and add the directory to a local or remote server. Update the config.php document with all the necessary info (database creds, field names, Google Maps API key). Then go to the app in your browser and click the button!</p>
@@ -131,7 +131,7 @@
 		<input type="submit" id="submit" value="CLICK THIS TO GEOCODE" />
 	</form>
 	
-	<p id="credit">made with &hearts; by <a href="http://jennschiffer.com">jenn schiffer</a></p>
+	<p id="credit">made with &hearts; by <a href="http://jenn.ws">jenn schiffer</a></p>
 
 	<a href="https://github.com/jennschiffer/geokerd"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
 </body>
